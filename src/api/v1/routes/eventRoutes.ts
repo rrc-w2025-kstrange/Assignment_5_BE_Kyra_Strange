@@ -19,7 +19,7 @@ router.post('/', validateRequest(eventSchemas.create), createEvent);
  * @openapi
  * /api/v1/events:
  *   get:
- *     summary: Get all events
+ *     summary: Retrieve all events
  *     tags:
  *       - Events
  *     responses:
@@ -51,6 +51,7 @@ router.post('/', validateRequest(eventSchemas.create), createEvent);
  *                   type: string
  *                   example: "Internal Server Error"
  */
+router.get('/', getAllEvents);
 router.get('/', getAllEvents);
 router.get('/:id', validateRequest(eventSchemas.getById), getEventById);
 router.put('/:id', validateRequest(eventSchemas.update), updateEvent);
