@@ -20,24 +20,19 @@ router.post('/', validateRequest(eventSchemas.create), createEvent);
  * /api/v1/events:
  *   get:
  *     summary: Get all events
- *     description: Retrieve a list of all events
  *     tags: [Events]
  *     responses:
  *       200:
- *         description: A list of events
+ *         description: Events retrieved successfully
  *         content:
  *           application/json:
  *             example:
- *               [
- *                 {
- *                   id: "1",
- *                   name: "Concert",
- *                   date: "2026-04-01",
- *                   location: "Winnipeg"
- *                 }
- *               ]
+ *               message: "Events retrieved"
+ *               count: 2
+ *               data:
+ *                 - $ref: '#/components/schemas/Event'
  *       500:
- *         description: Server error
+ *         description: Internal server error
  */
 router.get('/', getAllEvents);
 router.get('/:id', validateRequest(eventSchemas.getById), getEventById);
