@@ -12,7 +12,6 @@ import { eventSchemas } from "../validation/eventsSchemas";
 
 const router: Router = Router();
 
-
 /**
  * @openapi
  * /api/v1/events:
@@ -117,7 +116,40 @@ router.post('/', validateRequest(eventSchemas.create), createEvent);
  *                   example: "Internal Server Error"
  */
 router.get('/', getAllEvents);
-router.get('/', getAllEvents);
+
+/**
+ * @openapi
+ * /api/v1/events/{id}:
+ *   get:
+ *     summary: Retrieve a single event by ID
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "evt_001"
+ *         description: The unique ID of the event
+ *     responses:
+ *       200:
+ *         description: Event retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       404:
+ *         description: Event not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Event not found"
+ */
 router.get('/:id', validateRequest(eventSchemas.getById), getEventById);
 router.put('/:id', validateRequest(eventSchemas.update), updateEvent);
 router.delete('/:id', validateRequest(eventSchemas.delete), deleteEvent);
