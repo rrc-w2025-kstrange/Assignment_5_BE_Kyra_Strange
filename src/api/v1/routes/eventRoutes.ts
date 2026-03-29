@@ -12,6 +12,7 @@ import { eventSchemas } from "../validation/eventsSchemas";
 
 const router: Router = Router();
 
+
 /**
  * @openapi
  * /api/v1/events:
@@ -79,6 +80,8 @@ const router: Router = Router();
  *                   example: "Failed to create event"
  */
 router.post('/', validateRequest(eventSchemas.create), createEvent);
+
+
 /**
  * @openapi
  * /api/v1/events:
@@ -117,6 +120,7 @@ router.post('/', validateRequest(eventSchemas.create), createEvent);
  */
 router.get('/', getAllEvents);
 
+
 /**
  * @openapi
  * /api/v1/events/{id}:
@@ -151,6 +155,68 @@ router.get('/', getAllEvents);
  *                   example: "Event not found"
  */
 router.get('/:id', validateRequest(eventSchemas.getById), getEventById);
+
+
+/**
+ * @openapi
+ * /api/v1/events/{id}:
+ *   put:
+ *     summary: Update an existing event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "evt_001"
+ *         description: The unique ID of the event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 3
+ *                 example: "Updated Tech Conference"
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2026-05-01T10:00:00Z"
+ *               capacity:
+ *                 type: integer
+ *                 minimum: 5
+ *                 example: 120
+ *               status:
+ *                 type: string
+ *                 enum: [active, cancelled, completed]
+ *                 example: "active"
+ *               category:
+ *                 type: string
+ *                 enum: [conference, workshop, meetup, seminar, general]
+ *                 example: "conference"
+ *     responses:
+ *       200:
+ *         description: Event updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       404:
+ *         description: Event not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Event not found"
+ */
 router.put('/:id', validateRequest(eventSchemas.update), updateEvent);
 router.delete('/:id', validateRequest(eventSchemas.delete), deleteEvent);
 
