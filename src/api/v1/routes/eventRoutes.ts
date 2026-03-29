@@ -218,6 +218,45 @@ router.get('/:id', validateRequest(eventSchemas.getById), getEventById);
  *                   example: "Event not found"
  */
 router.put('/:id', validateRequest(eventSchemas.update), updateEvent);
+
+
+/**
+ * @openapi
+ * /api/v1/events/{id}:
+ *   delete:
+ *     summary: Delete an existing event
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "evt_001"
+ *         description: The unique ID of the event
+ *     responses:
+ *       200:
+ *         description: Event deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Entity evt_001 was deleted"
+ *       404:
+ *         description: Event not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Event not found"
+ */
 router.delete('/:id', validateRequest(eventSchemas.delete), deleteEvent);
 
 export default router;
