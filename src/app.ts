@@ -1,7 +1,8 @@
 import express, { Express } from "express";
+import dotenv from "dotenv";
+dotenv.config();
 import eventRoutes from "./api/v1/routes/eventRoutes";
 import setupSwagger from "./config/swagger";
-
 
 // Initialize Express application
 const app: Express = express();
