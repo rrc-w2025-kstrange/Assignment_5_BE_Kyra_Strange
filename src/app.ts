@@ -4,6 +4,7 @@ dotenv.config();
 import eventRoutes from "./api/v1/routes/eventRoutes";
 import setupSwagger from "./config/swagger";
 import { getHelmetConfig } from "./config/helmetConfig";
+import cors from "cors";
 
 
 // Initialize Express application
