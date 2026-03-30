@@ -9,15 +9,14 @@ import {
 import { validateRequest } from "../middleware/validate";
 import { eventSchemas } from "../validation/eventsSchemas";
 
-
 const router: Router = Router();
-
 
 /**
  * @openapi
  * /api/v1/events:
  *   post:
  *     summary: Create a new event
+ *     description: Creates a new event with details such as name, date, and capacity. 
  *     tags:
  *       - Events
  *     requestBody:
@@ -68,6 +67,16 @@ const router: Router = Router();
  *                   example: "Event created"
  *                 data:
  *                   $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Validation error: \"name\" cannot be empty"
  *       500:
  *         description: Failed to create event
  *         content:
@@ -81,14 +90,35 @@ const router: Router = Router();
  */
 router.post('/', validateRequest(eventSchemas.create), createEvent);
 
-
 /**
  * @openapi
  * /api/v1/events:
  *   get:
  *     summary: Retrieve all events
+ *     description: Retrieves a list of events. 
  *     tags:
  *       - Events
+ *     parameters: 
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *           example: "conference"
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           example: "active"
  *     responses:
  *       200:
  *         description: Events retrieved successfully
@@ -120,12 +150,12 @@ router.post('/', validateRequest(eventSchemas.create), createEvent);
  */
 router.get('/', getAllEvents);
 
-
 /**
  * @openapi
  * /api/v1/events/{id}:
  *   get:
  *     summary: Retrieve a single event by ID
+ *     description: Retrieves a specific event using its unique ID. 
  *     tags:
  *       - Events
  *     parameters:
@@ -142,7 +172,13 @@ router.get('/', getAllEvents);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Event'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Event retrieved"
+ *                 data:
+ *                   $ref: '#/components/schemas/Event'
  *       404:
  *         description: Event not found
  *         content:
@@ -156,12 +192,12 @@ router.get('/', getAllEvents);
  */
 router.get('/:id', validateRequest(eventSchemas.getById), getEventById);
 
-
 /**
  * @openapi
  * /api/v1/events/{id}:
  *   put:
  *     summary: Update an existing event
+ *     description: Updates event details such as name, date, or capacity. 
  *     tags:
  *       - Events
  *     parameters:
@@ -219,12 +255,12 @@ router.get('/:id', validateRequest(eventSchemas.getById), getEventById);
  */
 router.put('/:id', validateRequest(eventSchemas.update), updateEvent);
 
-
 /**
  * @openapi
  * /api/v1/events/{id}:
  *   delete:
  *     summary: Delete an existing event
+ *     description: Deletes an event using its unique ID.
  *     tags:
  *       - Events
  *     parameters:
