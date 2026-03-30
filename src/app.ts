@@ -3,9 +3,13 @@ import dotenv from "dotenv";
 dotenv.config();
 import eventRoutes from "./api/v1/routes/eventRoutes";
 import setupSwagger from "./config/swagger";
+import helmet from "helmet";
+
 
 // Initialize Express application
 const app: Express = express();
+
+app.use(helmet());
 
 app.use(express.json());
 
