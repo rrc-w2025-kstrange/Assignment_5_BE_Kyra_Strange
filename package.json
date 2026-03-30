@@ -5,7 +5,8 @@
     "scripts": {
         "start": "ts-node src/server.ts",
         "build": "tsc",
-        "test": "jest",
+        "generate-docs": "ts-node scripts/generate-openapi.ts && npx @redocly/cli build-docs openapi.json --output docs/index.html",
+        "test": "jest",      
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage"
     },
@@ -25,6 +26,7 @@
         "uuid": "^13.0.0"
     },
     "devDependencies": {
+        "@redocly/cli": "^2.25.2",
         "@types/cors": "^2.8.19",
         "@types/express": "^5.0.6",
         "@types/jest": "^29.5.14",
