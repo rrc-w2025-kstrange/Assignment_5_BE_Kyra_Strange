@@ -16,7 +16,7 @@ const router: Router = Router();
  * /api/v1/events:
  *   post:
  *     summary: Create a new event
- *     description: Creates a new event with details such as name, date, and capacity. 
+ *     description: Use this endpoint to add a new event with a name, date, capacity, and optional fields. Validation will check that all required fields are filled and meet the minimum requirements.
  *     tags:
  *       - Events
  *     requestBody:
@@ -56,7 +56,7 @@ const router: Router = Router();
  *                 example: "conference"
  *     responses:
  *       201:
- *         description: Event created successfully
+ *         description: Event successfully created and returned
  *         content:
  *           application/json:
  *             schema:
@@ -68,7 +68,7 @@ const router: Router = Router();
  *                 data:
  *                   $ref: '#/components/schemas/Event'
  *       400:
- *         description: Validation error
+ *         description: Validation errors for missing or incorrect fields
  *         content:
  *           application/json:
  *             schema:
@@ -76,9 +76,22 @@ const router: Router = Router();
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Validation error: \"name\" cannot be empty"
+ *                   oneOf:
+ *                     - example: 'Validation error: "name" is required'
+ *                     - example: 'Validation error: "name" cannot be empty'
+ *                     - example: 'Validation error: "name" length must be at least 3 characters long'
+ *                     - example: 'Validation error: "date" is required'
+ *                     - example: 'Validation error: "date" must be a valid ISO date'
+ *                     - example: 'Validation error: "date" must be greater than "now"'
+ *                     - example: 'Validation error: "capacity" is required'
+ *                     - example: 'Validation error: "capacity" must be a number'
+ *                     - example: 'Validation error: "capacity" must be an integer'
+ *                     - example: 'Validation error: "capacity" must be greater than or equal to 5'
+ *                     - example: 'Validation error: "registrationCount" must be less than or equal to ref:capacity'
+ *                     - example: 'Validation error: "status" must be one of [active, cancelled, completed]'
+ *                     - example: 'Validation error: "category" must be one of [conference, workshop, meetup, seminar, general]'
  *       500:
- *         description: Failed to create event
+ *         description: Something went wrong on the server
  *         content:
  *           application/json:
  *             schema:
@@ -94,34 +107,13 @@ router.post('/', validateRequest(eventSchemas.create), createEvent);
  * @openapi
  * /api/v1/events:
  *   get:
- *     summary: Retrieve all events
- *     description: Retrieves a list of events. 
+ *     summary: Get all events
+ *     description: Retrieve a list of all events, including count and details. 
  *     tags:
  *       - Events
- *     parameters: 
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           example: 1
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           example: 10
- *       - in: query
- *         name: category
- *         schema:
- *           type: string
- *           example: "conference"
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           example: "active"
  *     responses:
  *       200:
- *         description: Events retrieved successfully
+ *         description: Successfully retrieved events list
  *         content:
  *           application/json:
  *             schema:
@@ -154,8 +146,8 @@ router.get('/', getAllEvents);
  * @openapi
  * /api/v1/events/{id}:
  *   get:
- *     summary: Retrieve a single event by ID
- *     description: Retrieves a specific event using its unique ID. 
+ *     summary: Get a single event by ID
+ *     description: Retrieve a specific event using its unique ID. Returns event details if found, otherwise returns 404.
  *     tags:
  *       - Events
  *     parameters:
@@ -168,19 +160,13 @@ router.get('/', getAllEvents);
  *         description: The unique ID of the event
  *     responses:
  *       200:
- *         description: Event retrieved successfully
+ *         description: Successfully retrieved the event
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Event retrieved"
- *                 data:
- *                   $ref: '#/components/schemas/Event'
+ *               $ref: '#/components/schemas/Event'
  *       404:
- *         description: Event not found
+ *         description: Event not found with the given ID
  *         content:
  *           application/json:
  *             schema:
@@ -197,7 +183,7 @@ router.get('/:id', validateRequest(eventSchemas.getById), getEventById);
  * /api/v1/events/{id}:
  *   put:
  *     summary: Update an existing event
- *     description: Updates event details such as name, date, or capacity. 
+ *     description: Update details of an existing event. You can change name, date, capacity, status, or category. At least one field is required in the request body.
  *     tags:
  *       - Events
  *     parameters:
@@ -237,11 +223,28 @@ router.get('/:id', validateRequest(eventSchemas.getById), getEventById);
  *                 example: "conference"
  *     responses:
  *       200:
- *         description: Event updated successfully
+ *         description: Event successfully updated
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Event'
+ *       400:
+ *         description: Validation errors for incorrect fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   oneOf:
+ *                     - example: "\"name\" length must be at least 3 characters long"
+ *                     - example: "\"date\" must be in iso format"
+ *                     - example: "\"capacity\" must be a number"
+ *                     - example: "\"capacity\" must be greater than or equal to 5"
+ *                     - example: "\"status\" must be one of [active, cancelled, completed]"
+ *                     - example: "\"category\" must be one of [conference, workshop, meetup, seminar, general]"
+ *                     - example: "\"category\" must be one of [conference, workshop, meetup, seminar, general]"                  
  *       404:
  *         description: Event not found
  *         content:
@@ -259,8 +262,8 @@ router.put('/:id', validateRequest(eventSchemas.update), updateEvent);
  * @openapi
  * /api/v1/events/{id}:
  *   delete:
- *     summary: Delete an existing event
- *     description: Deletes an event using its unique ID.
+ *     summary: Delete an event
+ *     description: Remove an event by its unique ID. Returns a confirmation message if deleted, otherwise returns 404.
  *     tags:
  *       - Events
  *     parameters:
@@ -273,7 +276,7 @@ router.put('/:id', validateRequest(eventSchemas.update), updateEvent);
  *         description: The unique ID of the event
  *     responses:
  *       200:
- *         description: Event deleted successfully
+ *         description: Event successfully deleted
  *         content:
  *           application/json:
  *             schema:
